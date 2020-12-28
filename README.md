@@ -10,3 +10,4 @@ This directory is for storing codes I wrote alone with making the course.
 
 They are scattered and used for illustrations during the class
 
+**Please consider contributing to this project if you are a teacher & you are interested!**
