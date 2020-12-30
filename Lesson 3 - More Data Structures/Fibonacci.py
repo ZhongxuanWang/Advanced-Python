@@ -17,11 +17,7 @@ def timing(func):  # You just learnt it in the last lesson.. This is a decorator
 
 @timing
 def plain_rec(n):
-    if n <= 0:
-        print('Input > 0')
-    elif n == 1:
-        return 0
-    elif n == 2:
+    if n <= 3:
         return 1
     else:
         return plain_rec(n - 1) + plain_rec(n - 2)
@@ -31,8 +27,8 @@ def plain_rec(n):
 
 @timing
 def dp(n):
-    if n <= 1:
-        return n
+    if n <= 3:
+        return 1
     if dp_list[n - 1] is not None:
         first = dp_list[n - 1]
     else:
@@ -51,7 +47,7 @@ if __name__ == '__main__':
     # See the printing!! Function with the same parameter is being called multiple times, which could be optimized.
     # Also, function with greater depth takes less time since they have fewer recursions.
 
-    NthFibToRun = 3  # ADJUST YOUR INPUT HERE
+    NthFibToRun = 6  # ADJUST YOUR INPUT HERE. Eg. 6 means the 3rd number, NOT index 6.
 
     aa = time.time()
     print(plain_rec(NthFibToRun))
