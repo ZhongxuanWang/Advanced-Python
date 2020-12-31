@@ -22,8 +22,6 @@ def plain_rec(n):
     else:
         return plain_rec(n - 1) + plain_rec(n - 2)
 
-# TODO DRAW A MIND MAP ILLUSTRATION OF THE DP TO DEEPEN THE UNDERSTANDING
-
 
 @timing
 def dp(n):
@@ -47,7 +45,7 @@ if __name__ == '__main__':
     # See the printing!! Function with the same parameter is being called multiple times, which could be optimized.
     # Also, function with greater depth takes less time since they have fewer recursions.
 
-    NthFibToRun = 6  # ADJUST YOUR INPUT HERE. Eg. 6 means the 3rd number, NOT index 6.
+    NthFibToRun = 7  # ADJUST YOUR INPUT HERE. Eg. 7 means the 7th number, NOT index 7 (which becomes the 8th number).
 
     aa = time.time()
     print(plain_rec(NthFibToRun))
@@ -56,5 +54,5 @@ if __name__ == '__main__':
     a = time.time()
     dp_list = [None] * (NthFibToRun+1)
     print(dp(NthFibToRun))
-    print(f'Total time cost for DP with Memoization is: {(time.time() - a) * 1000} ms')
-    print(f'Total time cost for Plain Recursion is: {rec_cost} ms')
+    print(f'Total time cost for DP with Memoization\t is: {(time.time() - a) * 1000} ms')
+    print(f'Total time cost for Plain Recursion \t is: {rec_cost} ms')

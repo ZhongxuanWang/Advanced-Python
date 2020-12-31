@@ -13,7 +13,7 @@ class LinkedList:
         point = self.head
         while point != None:
             values.append(point.data)
-            point = point.pointer
+            point = point.next
         return values
 
     def insertAtBeginning(self, data):
@@ -23,29 +23,29 @@ class LinkedList:
 
     def insertAfter(self, node, data):
         new = Node(data)
-        new.pointer = node.pointer
-        node.pointer = new
+        new.pointer = node.next
+        node.next = new
 
     def insertAtEnd(self, data):
         new = Node(data)
         point = self.head
         while point.pointer is not None:
-            point = point.pointer
+            point = point.next
         point.pointer = new
 
     def delete(self, index):
         # Note that first node is at index 0
         point = self.head
         if index == 0:
-            self.head = point.pointer
+            self.head = point.next
             del point
             return
         for i in range(index - 1): # TODO Check if it's really "index" or "position"
-            if point.pointer is None:
+            if point.next is None:
                 raise IndexError
             else:
-                point = point.pointer
-        point.pointer = point.pointer.pointer
+                point = point.next
+        point.next = point.next.next
 
     def getNode(self, index=None, data=None):
         # priority index first
@@ -53,12 +53,12 @@ class LinkedList:
         point = self.head
         if index is not None:
             for i in range(index):
-                point = point.pointer
+                point = point.next
             return point
         else:  # data != None
             while point.data != data:
-                if point.pointer is None:
+                if point.next is None:
                     return "Node not found"
                 else:
-                    point = point.pointer
+                    point = point.next
             return point
