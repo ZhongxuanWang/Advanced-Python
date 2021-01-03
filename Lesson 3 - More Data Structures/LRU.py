@@ -1,136 +1,106 @@
-# Least Recent Used Cache Implementation in Python
-class Node:
-    def __init__(self, data=None):
-        self.data = data
-        self.next = None
+from queue import PriorityQueue as PQueue
 
 
-class LinkedList:
-    def __init__(self, head=None):
-        self.head = head
-        self.size = 0
+class Node(object):
+    def __init__(self, node_key, val):
+        self.node_key = node_key
+        self.val = val
+        self.reference_count = 0
 
-    def remove_head(self):
-        self.head = self.head.next
-        self.size -= 1
+    def __str__(self):
+        return f"Key:{self.node_key} Val:{self.val}"
 
-    def collectValues(self):
-        values = []
-        point = self.head
-        while point != None:
-            values.append(point.data)
-            point = point.next
-        return values
+    def __cmp__(self, other):
+        return self.reference_count > other.reference_count  # Casting is done implicitly in Python
 
-    def insert_at_tail(self, data):
-        if self.head is None:
-            self.insertAtBeginning(data)
-            return
-        new = Node(data)
-        point = self.head
-        while point.next is not None:
-            point = point.next
+    def __ge__(self, other):
+        # I intentionally inverted the sign to make sure every peek on the queue returns the largest count
+        return self.reference_count < other.reference_count
 
-        point.next = new
-        self.size += 1
+    def __lt__(self, other):
+        return self.reference_count > other.reference_count
 
-    def remove(self, index):
-        # Note that first node is at index 0
-        point = self.head
-        if index == 0:
-            self.head = point.next
-            del point
-            return
-        for i in range(index - 1):
-            if point.next is None:
-                raise IndexError
-            else:
-                point = point.next
-        point.next = point.next.next
-        self.size -=1
+    def __eq__(self, other):
+        return self.node_key == other.node_key and self.val == other.val
 
-    def insertAtBeginning(self, data):
-        new = Node(data)
-        new.next = self.head
-        self.head = new
-        self.size -=1
 
-    def insertAfter(self, node, data):
-        new = Node(data)
-        new.next = node.next
-        node.next = new
-        self.size-=1
+class PriorityQueue(PQueue):
+    def peek(self):
+        t = self.get()
+        self.put(t)
+        return t
 
-    def getNode(self, index=None, data=None):
-        point = self.head
-        if index is not None:
-            for i in range(index):
-                point = point.next
-            return point
-        else:
-            while point.data != data:
-                if point.next is None:
-                    return "Node not found"
-                else:
-                    point = point.next
-            return point
+    def print(self):
+        self._print(self)
+
+    def _print(self, queue):
+        if not queue.empty():
+            g = queue.get()
+            print(g)
+            self._print(queue)
+            queue.put(g)
 
 
 class LRUCache:
-    def __init__(self, capacity):
-        self.capacity = capacity
-        self.cache = set()
-        self.cache_vals = LinkedList()
+    def __init__(self):
+        self.queue = PriorityQueue()
 
-    def set(self, value):
-        node = self.get(value)
-        if node is None:
-            if self.cache_vals.size >= self.capacity:
-                self.cache_vals.insert_at_tail(value)
-                self.cache.add(value)
-                self.cache.remove(self.cache_vals.head.data)
-                self.cache_vals.remove_head()
+    def put(self, key, val) -> None:
+        self.queue.put(Node(key, val))
+
+    def putNode(self, node: Node) -> None:
+        self.queue.put(node)
+
+    def print(self):
+        self.queue.print()
+
+    def removeNode(self, node):
+        if self.queue.empty():
+            g = self.queue.get()
+            if g != node:
+                self.removeNode(node)
+                self.queue.put(g)
             else:
-                self.cache_vals.insert_at_tail(value)
-                self.cache.add(value)
+                return
 
-        else:
-            self.cache_vals.remove(value)
-            self.cache_vals.insert_at_tail(value)
+    def get(self, node):
+        if not self.queue.empty():
+            g = self.queue.get()
+            if g == node:
+                self.queue.put(g)
+                return g
+            ret = self.get(node)
+            return ret
 
-    def get(self, value):
-        if value not in self.cache:
-            return None
-        else:
-            i = self.cache_vals.head
-            while i is not None:
-                if i.data == value:
-                    return i
-                i = i.next
-
-    def print_cache(self):
-        node = self.cache_vals.head
-        while node is not None:
-            print(str(node.data) + ", ")
-            node = node.next
+    def refer(self, node):
+        if not self.queue.empty():
+            g = self.queue.get()
+            if g == node:
+                g.reference_count += 1
+            self.refer(node)
+            self.queue.put(g)
 
 
 if __name__ == '__main__':
-    cache1 = LRUCache(4)
-    cache1.set(10)
-    cache1.print_cache()
+    lru = LRUCache()
+    n1 = Node("key1", "val1")
+    n2 = Node("key2", "val2")
+    n3 = Node("key3", "val3")
+    n4 = Node("key4", "val4")
+    lru.putNode(n1)
+    lru.putNode(n2)
+    lru.putNode(n3)
+    lru.putNode(n4)
+    print(lru.get(n1))
+    print("- - - - - - - ")
+    lru.refer(n1)
+    lru.refer(n1)
+    lru.refer(n1)
 
-    cache1.set(15)
-    cache1.print_cache()
+    lru.refer(n2)
+    lru.refer(n2)
+    lru.refer(n3)
 
-    cache1.set(20)
-    cache1.print_cache()
-
-    cache1.set(25)
-    cache1.print_cache()
-
-    cache1.set(30)
-    cache1.print_cache()
-
-    cache1.set(20)
-    cache1.print_cache()
+    lru.print()
+    # lru.removeNode(Node("key", "val"))
+    # lru.print()
