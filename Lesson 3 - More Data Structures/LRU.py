@@ -63,15 +63,6 @@ class LRUCache:
             else:
                 return
 
-    def get(self, node):
-        if not self.queue.empty():
-            g = self.queue.get()
-            if g == node:
-                self.queue.put(g)
-                return g
-            ret = self.get(node)
-            return ret
-
     def refer(self, node):
         if not self.queue.empty():
             g = self.queue.get()
@@ -79,6 +70,16 @@ class LRUCache:
                 g.reference_count += 1
             self.refer(node)
             self.queue.put(g)
+
+    def get(self, node):
+        if not self.queue.empty():
+            g = self.queue.get()
+            if g == node:
+                self.queue.put(g)
+                g.reference_count += 1
+                return g
+            ret = self.get(node)
+            return ret
 
 
 if __name__ == '__main__':

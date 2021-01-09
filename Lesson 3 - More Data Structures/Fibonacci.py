@@ -24,21 +24,28 @@ def plain_rec(n):
 
 
 @timing
-def dp(n):
+def dp_memoization(n):
     if n <= 3:
         return 1
     if dp_list[n - 1] is not None:
         first = dp_list[n - 1]
     else:
-        first = dp(n - 1)
+        first = dp_memoization(n - 1)
 
     if dp_list[n - 2] is not None:
         second = dp_list[n - 2]
     else:
-        second = dp(n - 2)
+        second = dp_memoization(n - 2)
 
     dp_list[n] = first + second
     return dp_list[n]
+
+
+@timing
+def dp_tabulation(n):
+    for i in range(4, n+1):
+        dp_list[i-1] = dp_list[i-2] + dp_list[i-3]
+    return dp_list[n-1]
 
 
 if __name__ == '__main__':
@@ -47,12 +54,19 @@ if __name__ == '__main__':
 
     NthFibToRun = 7  # ADJUST YOUR INPUT HERE. Eg. 7 means the 7th number, NOT index 7 (which becomes the 8th number).
 
-    aa = time.time()
+    a = time.time()
     print(plain_rec(NthFibToRun))
-    rec_cost = (time.time() - aa) * 1000
+    rec_cost = (time.time() - a) * 1000
     print(' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -')
     a = time.time()
     dp_list = [None] * (NthFibToRun+1)
-    print(dp(NthFibToRun))
+    print(dp_memoization(NthFibToRun))
     print(f'Total time cost for DP with Memoization\t is: {(time.time() - a) * 1000} ms')
+    dp_list = [None] * (NthFibToRun+1)
+    dp_list[0] = 0
+    dp_list[1] = 1
+    dp_list[2] = 1
+    a = time.time()
+    print(dp_tabulation(NthFibToRun))
+    print(f'Total time cost for DP with Tabulation\t is: {(time.time() - a) * 1000} ms')
     print(f'Total time cost for Plain Recursion \t is: {rec_cost} ms')
